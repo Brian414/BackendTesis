@@ -158,3 +158,14 @@ E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\runtimes\win
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\runtimes\win-x64\native\e_sqlite3.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\runtimes\win-x86\native\e_sqlite3.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\MyBackend.sourcelink.json
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\BCrypt.Net-Next.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
