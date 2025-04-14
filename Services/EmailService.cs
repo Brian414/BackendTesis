@@ -13,9 +13,11 @@ public class EmailService : IEmailService
     {
         _configuration = configuration;
     }
+
+    public string Mensaje1Recuperacion = "Hola,Hemos recibido una solicitud para cambiar la contraseña de tu cuenta. Para continuar con el proceso, por favor utilice el siguiente código de verificación: ";
     public string SendEmail(string to ){
         string token = GenerateVerificationCode();
-        MailMessage mailMessage = new MailMessage("yaselbarrioscarrillo@gmail.com" , to , "Yasel" ,"http://localhost:5194/api/User/VerifyEmail?email="+to+"&code="+token);
+        MailMessage mailMessage = new MailMessage("yaselbarrioscarrillo@gmail.com" , to , "Código de verificación para cambiar tu contraseña" , Mensaje1Recuperacion+token);
         mailMessage.IsBodyHtml = true;
         System.Net.Mail.SmtpClient smtpClient = new System.Net.Mail.SmtpClient("smtp.gmail.com");
         smtpClient.EnableSsl = true;
