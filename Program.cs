@@ -16,6 +16,7 @@ builder.Services.AddDbContext<DBContext>(
 );
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>(); // Asegúrate de que EmailService es la implementación de IEmailService
 
 // Configurar autenticación JWT
 builder.Services.AddAuthentication(options =>
@@ -37,6 +38,14 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"] ?? ""))
     };
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors",
+        policy => policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -44,7 +53,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("DevCors");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
