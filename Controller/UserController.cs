@@ -143,4 +143,22 @@ public class UserController : ControllerBase{
         
         return Ok(new { message = "Contraseña actualizada correctamente" });
     }
+
+    [HttpPost("ValidateVerificationToken")]
+    public async Task<IActionResult> ValidateVerificationToken([FromBody] ResetPasswordVerifyModel model)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(model.Email));
+        
+        if (user is null)
+        {
+            return BadRequest(new { message = "Usuario no encontrado" });
+        }
+        
+        if (user.Code != model.Code)
+        {
+            return BadRequest(new { message = "Código de verificación incorrecto" });
+        }
+        
+        return Ok(new { message = "Código de verificación válido", isValid = true });
+    }
 }
