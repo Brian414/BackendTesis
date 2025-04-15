@@ -15,3 +15,10 @@ public class ResetPasswordVerifyModel
     public required string Code { get; set; }
     public required string NewPassword { get; set; }
 }
+
+public class VerifyCode
+{
+    public required string Code { get; set; }
+
+    public required string Email { get; set; }
+}

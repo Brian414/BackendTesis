@@ -145,14 +145,9 @@ public class UserController : ControllerBase{
     }
 
     [HttpPost("ValidateVerificationToken")]
-    public async Task<IActionResult> ValidateVerificationToken([FromBody] ResetPasswordVerifyModel model)
+    public async Task<IActionResult> ValidateVerificationToken([FromBody] VerifyCode model)
     {
         var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(model.Email));
-        
-        if (user is null)
-        {
-            return BadRequest(new { message = "Usuario no encontrado" });
-        }
         
         if (user.Code != model.Code)
         {
