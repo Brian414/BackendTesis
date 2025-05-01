@@ -3,5 +3,6 @@ namespace MyBackend.Interface;
 public interface IEmailService
 {
     //cambios 
-    string SendEmail(string to);
+     string SendVerificationEmail(string email);
+    string SendPasswordResetEmail(string email);
 }

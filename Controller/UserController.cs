@@ -21,17 +21,17 @@ public class UserController : ControllerBase{
         _emailService = emailService;
     }
     
-    [HttpPost("CreateUser")]
-    public async Task<IActionResult> CreateUser(UserModel userModel){
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userModel.Email));
-        if(user is not null){
-            return BadRequest(new {message = "El usuario ya esta registrado"});
-        }
-        
-        // Generar código de verificación y enviar correo
-        string verificationCode = _emailService.SendEmail(
-            userModel.Email
-        );
+ [HttpPost("CreateUser")]
+public async Task<IActionResult> CreateUser(UserModel userModel){
+    var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userModel.Email));
+    if(user is not null){
+        return BadRequest(new {message = "El usuario ya esta registrado"});
+    }
+    
+    // Generar código de verificación y enviar correo de verificación
+    string verificationCode = _emailService.SendVerificationEmail(
+        userModel.Email
+    );
         
         var newUser = new User{
             Email = userModel.Email,
@@ -99,20 +99,20 @@ public class UserController : ControllerBase{
         return Ok(new { message = "Correo electrónico verificado correctamente" });
     }
     
-    [HttpPost("RequestPasswordReset")]
-    public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordRequestModel model)
+   [HttpPost("RequestPasswordReset")]
+public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordRequestModel model)
+{
+    var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(model.Email));
+    
+    if (user is null)
     {
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(model.Email));
-        
-        if (user is null)
-        {
-            return BadRequest(new { message = "Usuario no encontrado" });
-        }
-        
-        // Generar código de verificación y enviar correo
-        string resetCode = _emailService.SendEmail(
-            model.Email
-        );
+        return BadRequest(new { message = "Usuario no encontrado" });
+    }
+    
+    // Generar código de verificación y enviar correo de restablecimiento
+    string resetCode = _emailService.SendPasswordResetEmail(
+        model.Email
+    );
         
         // Guardar el código de verificación en el usuario
         user.Code = resetCode;
@@ -155,5 +155,22 @@ public class UserController : ControllerBase{
         }
         
         return Ok(new { message = "Código de verificación válido", isValid = true });
+    }
+
+    [HttpDelete("ClearAllUsers")]
+    public async Task<IActionResult> ClearAllUsers([FromQuery] string adminKey)
+    {
+        // Aquí deberías definir una clave de administrador segura en tu configuración
+        string expectedAdminKey = "12345678"; 
+        
+        if (adminKey != expectedAdminKey)
+        {
+            return Unauthorized(new { message = "No autorizado para realizar esta acción" });
+        }
+
+        await context.Users.ExecuteDeleteAsync();
+        await context.SaveChangesAsync();
+        
+        return Ok(new { message = "Tabla de usuarios vaciada correctamente" });
     }
 }
