@@ -16,7 +16,7 @@ builder.Services.AddDbContext<DBContext>(
 );
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IEmailService, EmailService>(); // Asegúrate de que EmailService es la implementación de IEmailService
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configurar autenticación JWT
 builder.Services.AddAuthentication(options =>
