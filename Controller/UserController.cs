@@ -22,6 +22,7 @@ public class UserController : ControllerBase{
     }
     
     [HttpPost("CreateUser")]
+    //para crear un nuevo usuario y que este sea consultor hay que registrarlo directamente desde el backend i poner la variable esConsultor en true
     public async Task<IActionResult> CreateUser(UserModel userModel){
         var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userModel.Email));
         if(user is not null){
@@ -176,6 +177,7 @@ public class UserController : ControllerBase{
     }
 
     [HttpGet("GetConsultores")]
+    //este metodo se usa para obtener la lista de los consultores tomar el id y ponerlo manualmente en el fronted 
     public async Task<IActionResult> GetConsultores()
     {
         var consultores = await context.Users
