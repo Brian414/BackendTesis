@@ -9,4 +9,5 @@ public class User{
     public required string Email { get ; set ; }
     public string? Code { get; set; }
     public DateTime? EmailVerificado { get; set; }
+    public bool EsConsultor { get; set; } = false; // Valor por defecto false
 }

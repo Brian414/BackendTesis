@@ -21,23 +21,24 @@ public class UserController : ControllerBase{
         _emailService = emailService;
     }
     
- [HttpPost("CreateUser")]
-public async Task<IActionResult> CreateUser(UserModel userModel){
-    var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userModel.Email));
-    if(user is not null){
-        return BadRequest(new {message = "El usuario ya esta registrado"});
-    }
-    
-    // Generar código de verificación y enviar correo de verificación
-    string verificationCode = _emailService.SendVerificationEmail(
-        userModel.Email
-    );
+    [HttpPost("CreateUser")]
+    public async Task<IActionResult> CreateUser(UserModel userModel){
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userModel.Email));
+        if(user is not null){
+            return BadRequest(new {message = "El usuario ya esta registrado"});
+        }
         
+        // Generar código de verificación y enviar correo de verificación
+        string verificationCode = _emailService.SendVerificationEmail(
+            userModel.Email
+        );
+            
         var newUser = new User{
             Email = userModel.Email,
             Name = userModel.Name,
             Password = _passwordService.HashPassword(userModel.Password),
-            Code = verificationCode
+            Code = verificationCode,
+            EsConsultor = userModel.EsConsultor ?? false, // Si es null, será false
         };
         await context.Users.AddAsync(newUser);
         await context.SaveChangesAsync();
@@ -99,21 +100,21 @@ public async Task<IActionResult> CreateUser(UserModel userModel){
         return Ok(new { message = "Correo electrónico verificado correctamente" });
     }
     
-   [HttpPost("RequestPasswordReset")]
-public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordRequestModel model)
-{
-    var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(model.Email));
-    
-    if (user is null)
+    [HttpPost("RequestPasswordReset")]
+    public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordRequestModel model)
     {
-        return BadRequest(new { message = "Usuario no encontrado" });
-    }
-    
-    // Generar código de verificación y enviar correo de restablecimiento
-    string resetCode = _emailService.SendPasswordResetEmail(
-        model.Email
-    );
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(model.Email));
         
+        if (user is null)
+        {
+            return BadRequest(new { message = "Usuario no encontrado" });
+        }
+        
+        // Generar código de verificación y enviar correo de restablecimiento
+        string resetCode = _emailService.SendPasswordResetEmail(
+            model.Email
+        );
+            
         // Guardar el código de verificación en el usuario
         user.Code = resetCode;
         await context.SaveChangesAsync();
@@ -172,5 +173,24 @@ public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordRe
         await context.SaveChangesAsync();
         
         return Ok(new { message = "Tabla de usuarios vaciada correctamente" });
+    }
+
+    [HttpGet("GetConsultores")]
+    public async Task<IActionResult> GetConsultores()
+    {
+        var consultores = await context.Users
+            .Where(u => u.EsConsultor)
+            .Select(u => new {
+                Id = u.UserId,
+                Nombre = u.Name
+            })
+            .ToListAsync();
+
+        if (!consultores.Any())
+        {
+            return NotFound(new { message = "No se encontraron consultores" });
+        }
+
+        return Ok(consultores);
     }
 }
