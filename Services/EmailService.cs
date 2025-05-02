@@ -47,6 +47,8 @@ public class EmailService : IEmailService
                             Verificar mi cuenta
                         </a>
                     </div>
+                    <p> Una vez verifiques tu cuenta, inicia sesión y accede a todos nuestros servicios.</p
+
                     <p>Si no solicitaste este registro, ignora este correo.</p>
                 
                 </div>
