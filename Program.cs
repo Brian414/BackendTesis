@@ -8,17 +8,29 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración existente
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Base de datos
 builder.Services.AddDbContext<DBContext>(
     option => option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+// Servicios existentes
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// Configurar autenticación JWT
+// Nuevo servicio para Ably (Agregar esto)
+builder.Services.AddSingleton(provider => 
+{
+    var apiKey = provider.GetRequiredService<IConfiguration>()["Ably:ApiKey"];
+    return new AblyService(apiKey);
+});
+
+// Autenticación JWT (existente)
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,25 +50,30 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"] ?? ""))
     };
 });
+
+// CORS (existente - verifica los orígenes)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCors",
         policy => policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins("http://localhost:5173") // Asegúrate que coincide con tu frontend
             .AllowAnyMethod()
-            .AllowAnyHeader());
+            .AllowAnyHeader()
+            .AllowCredentials()); // Agrega esto si usas autenticación
 });
+
 var app = builder.Build();
 
+// Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseRouting();
 app.UseCors("DevCors");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
