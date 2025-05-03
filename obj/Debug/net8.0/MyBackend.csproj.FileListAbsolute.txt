@@ -42,6 +42,7 @@ E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.Id
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Microsoft.OpenApi.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Mono.TextTemplating.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Newtonsoft.Json.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Npgsql.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\SQLitePCLRaw.batteries_v2.dll
 E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\SQLitePCLRaw.core.dll
@@ -169,4 +170,3 @@ E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\refint\MyBac
 E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\MyBackend.pdb
 E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\MyBackend.genruntimeconfig.cache
 E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\ref\MyBackend.dll
-E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\Newtonsoft.Json.dll

@@ -51,25 +51,25 @@ public class UserController : ControllerBase{
     {
         var user = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginModel.Email));
         
-        if (user is null)
+        if (user is null || !_passwordService.VerifyPassword(loginModel.Password, user.Password))
         {
             return BadRequest(new { message = "Email o contraseña incorrectos" });
         }
         
-        if (!_passwordService.VerifyPassword(loginModel.Password, user.Password))
-        {
-            return BadRequest(new { message = "Email o contraseña incorrectos" });
-        }
+        var token = _tokenService.GenerateToken(user.UserId, user.EsConsultor);
         
-        var token = _tokenService.GenerateToken(user.UserId);
+        // Agregar el token al header de la respuesta
+        Response.Headers.Add("Authorization", $"Bearer {token}");
         
         return Ok(new { 
-            message = "Login exitoso",
+            message = "Login exitoso. Para usar en Swagger: Copia el token y añádelo en el candado con el formato 'Bearer <token>'",
             token = token,
+            tokenType = "Bearer",
             user = new {
                 userId = user.UserId,
                 name = user.Name,
-                email = user.Email
+                email = user.Email,
+                esConsultor = user.EsConsultor
             }
         });
     }

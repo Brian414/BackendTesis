@@ -1,7 +1,9 @@
+using System.Security.Claims;
+
 namespace MyBackend.Interface;
 
 public interface ITokenService
 {
-    string GenerateToken(Guid userId);
-    Guid ValidateToken(string token);
+    string GenerateToken(Guid userId, bool esConsultor);
+    ClaimsPrincipal? ValidateToken(string token);
 }

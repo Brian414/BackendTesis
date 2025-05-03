@@ -10,74 +10,56 @@ namespace MyBackend.Services;
 
 public class TokenService : ITokenService
 {
-    private readonly IConfiguration _configuration;
     private readonly string _secretKey;
-    private readonly string _issuer;
-    private readonly string _audience;
-    private readonly int _expiryMinutes;
 
-    public TokenService(IConfiguration configuration)
+    public TokenService(IConfiguration config)
     {
-        _configuration = configuration;
-        _secretKey = _configuration["JWT:SecretKey"] ?? "DefaultSecretKeyWith32Characters123456";
-        _issuer = _configuration["JWT:Issuer"] ?? "MyBackendAPI";
-        _audience = _configuration["JWT:Audience"] ?? "MyBackendClient";
-        _expiryMinutes = int.TryParse(_configuration["JWT:ExpiryMinutes"], out int minutes) ? minutes : 60;
+        _secretKey = config["Jwt:Key"] ?? throw new ArgumentNullException("JWT:Key no configurado");
     }
 
-    public string GenerateToken(Guid userId)
+    public string GenerateToken(Guid userId, bool esConsultor)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_secretKey);
-        
-        var tokenDescriptor = new SecurityTokenDescriptor
+        var claims = new[]
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
-            }),
-            Expires = DateTime.UtcNow.AddMinutes(_expiryMinutes),
-            Issuer = _issuer,
-            Audience = _audience,
-            SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Role, esConsultor ? "consultor" : "cliente"),
+            new Claim("EsConsultor", esConsultor.ToString())
         };
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(1),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    public Guid ValidateToken(string token)
+//
+    public ClaimsPrincipal? ValidateToken(string token)
     {
-        if (string.IsNullOrEmpty(token))
-            throw new ArgumentException("Token cannot be null or empty", nameof(token));
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_secretKey);
-
         try
         {
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            
+            var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = true,
-                ValidIssuer = _issuer,
-                ValidateAudience = true,
-                ValidAudience = _audience,
-                ValidateLifetime = true,
+                IssuerSigningKey = key,
+                ValidateIssuer = false,
+                ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
+            };
 
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-
-            return Guid.Parse(userId);
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+            return principal;
         }
-        catch (Exception)
+        catch
         {
-            throw new SecurityTokenException("Invalid token");
+            return null;
         }
     }
 }

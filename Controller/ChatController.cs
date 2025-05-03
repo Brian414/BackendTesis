@@ -7,30 +7,26 @@ using Newtonsoft.Json.Linq;
 using MyBackend.Services;
 using Microsoft.Extensions.Configuration;
 using MyBackend.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
+using MyBackend.DataBase;
 
 namespace MyBackend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly AblyService _ablyService;
         private readonly IConfiguration _config;
         private readonly string _ablySecret;
-        private readonly List<string> _predefinedConsultants = new List<string>
-        {
-            "c81ecbb6-ac62-4e5b-b3ad-71890f3ec22a", 
-            "5d05addc-8e42-4fdc-8994-8323b116f91c", 
-            "consultor_3",
-            "consultor_4", "consultor_5", "consultor_6",
-            "consultor_7", "consultor_8", "consultor_9",
-            "consultor_10"
-        };
+        private readonly DBContext _context;
 
-        public ChatController(AblyService ablyService, IConfiguration config)
+        public ChatController(AblyService ablyService, IConfiguration config, DBContext context)
         {
             _ablyService = ablyService;
             _config = config;
+            _context = context;
             var ablyApiKey = _config["Ably:ApiKey"];
             _ablySecret = ablyApiKey?.Split(':')[1] ?? throw new ArgumentNullException("Ably:ApiKey no configurado");
         }
@@ -38,27 +34,30 @@ namespace MyBackend.Controllers
         [HttpGet("token")]
         public IActionResult GenerateToken()
         {
+            // Verificar si el token está llegando
+            var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader))
+            {
+                return Unauthorized("No se encontró el token de autorización");
+            }
+
             var user = GetAuthenticatedUser();
-            if (user == null) return Unauthorized("Usuario no autenticado");
+            if (user == null)
+            {
+                return Unauthorized("Usuario no autenticado");
+            }
 
             var capabilities = new JObject();
 
             if (user.IsConsultant)
             {
-                // Consultores: Solo reciben mensajes en su canal y responden a canales de clientes
                 capabilities[$"consultor_{user.Id}"] = new JArray("subscribe");
                 capabilities["cliente_*"] = new JArray("publish");
             }
             else
             {
-                // Clientes: Solo envían a consultores específicos y reciben en su canal
                 capabilities[$"cliente_{user.Id}"] = new JArray("subscribe");
-
-                // Permite publicar solo en los consultores predefinidos
-                foreach (var consultant in _predefinedConsultants)
-                {
-                    capabilities[consultant] = new JArray("publish");
-                }
+                capabilities["consultor_*"] = new JArray("publish");
             }
 
             var token = GenerateJwtForAbly(user.Id, capabilities);
@@ -71,9 +70,6 @@ namespace MyBackend.Controllers
             var client = GetAuthenticatedUser();
             if (client == null || client.IsConsultant)
                 return Unauthorized("Solo clientes pueden enviar mensajes a consultores");
-
-            if (!_predefinedConsultants.Contains($"consultor_{request.ConsultantId}"))
-                return BadRequest("Consultor no válido");
 
             try
             {
@@ -126,10 +122,13 @@ namespace MyBackend.Controllers
         {
             if (!User.Identity.IsAuthenticated) return null;
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var esConsultor = User.FindFirst("EsConsultor")?.Value == "True";
+
             return new
             {
-                Id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                IsConsultant = User.HasClaim("role", "consultor") // Cambiado a "consultor" para consistencia
+                Id = userId,
+                IsConsultant = esConsultor
             };
         }
 
