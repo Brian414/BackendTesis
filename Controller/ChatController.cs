@@ -34,7 +34,6 @@ namespace MyBackend.Controllers
         [HttpGet("token")]
         public IActionResult GenerateToken()
         {
-            // Verificar si el token está llegando
             var authHeader = Request.Headers["Authorization"].ToString();
             if (string.IsNullOrEmpty(authHeader))
             {
@@ -48,20 +47,25 @@ namespace MyBackend.Controllers
             }
 
             var capabilities = new JObject();
+            string userChannelPattern = user.IsConsultant ? 
+                $"chat:*:{user.Id}" : // Para consultores
+                $"chat:{user.Id}:*";  // Para clientes
 
-            if (user.IsConsultant)
-            {
-                capabilities[$"consultor_{user.Id}"] = new JArray("subscribe");
-                capabilities["cliente_*"] = new JArray("publish");
-            }
-            else
-            {
-                capabilities[$"cliente_{user.Id}"] = new JArray("subscribe");
-                capabilities["consultor_*"] = new JArray("publish");
-            }
+            capabilities[userChannelPattern] = new JArray("publish", "subscribe");
 
             var token = GenerateJwtForAbly(user.Id, capabilities);
             return Ok(new { token });
+        }
+
+        [HttpGet("channel/{consultantId}")]
+        public IActionResult GetChannelName(string consultantId)
+        {
+            var user = GetAuthenticatedUser();
+            if (user == null)
+                return Unauthorized("Usuario no autenticado");
+
+            string channelName = ChatChannelService.GenerateChannelName(user.Id, consultantId);
+            return Ok(new { channelName });
         }
 
         [HttpPost("send-to-consultant")]
@@ -73,8 +77,9 @@ namespace MyBackend.Controllers
 
             try
             {
+                string channelName = ChatChannelService.GenerateChannelName(client.Id, request.ConsultantId);
                 await _ablyService.SendMessageAsync(
-                    channelName: $"consultor_{request.ConsultantId}",
+                    channelName: channelName,
                     message: new
                     {
                         text = request.Text,
@@ -83,7 +88,7 @@ namespace MyBackend.Controllers
                     }
                 );
 
-                return Ok(new { success = true });
+                return Ok(new { success = true, channelName });
             }
             catch (Exception ex)
             {
@@ -100,8 +105,9 @@ namespace MyBackend.Controllers
 
             try
             {
+                string channelName = ChatChannelService.GenerateChannelName(request.ClientId, consultant.Id);
                 await _ablyService.SendMessageAsync(
-                    channelName: $"cliente_{request.ClientId}",
+                    channelName: channelName,
                     message: new
                     {
                         text = request.Text,
@@ -110,7 +116,7 @@ namespace MyBackend.Controllers
                     }
                 );
 
-                return Ok(new { success = true });
+                return Ok(new { success = true, channelName });
             }
             catch (Exception ex)
             {
