@@ -187,17 +187,22 @@ namespace MyBackend.Controllers
                     .ToListAsync();
 
                 // Obtener los IDs de usuarios con los que se ha tenido conversaciones
-                var userIdsWithConversations = new HashSet<string>();
+                var userIdsWithConversations = new HashSet<Guid>();
                 foreach (var channelName in channelsWithMessages)
                 {
                     var (clientId, consultantId) = ChatChannelService.ParseChannelName(channelName);
                     var otherUserId = userId == clientId ? consultantId : clientId;
-                    userIdsWithConversations.Add(otherUserId);
+                    
+                    // Convertir el string a Guid antes de agregarlo al HashSet
+                    if (Guid.TryParse(otherUserId, out Guid otherUserGuid))
+                    {
+                        userIdsWithConversations.Add(otherUserGuid);
+                    }
                 }
 
                 // Obtener información de usuarios con los que se ha tenido conversaciones
                 var relevantUsers = await _context.Users
-                    .Where(u => userIdsWithConversations.Contains(u.UserId.ToString()))
+                    .Where(u => userIdsWithConversations.Contains(u.UserId))
                     .ToListAsync();
 
                 // Información de depuración
