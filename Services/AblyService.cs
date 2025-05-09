@@ -1,32 +1,75 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using IO.Ably; // Esta es la referencia correcta
+using MyBackend.Models;
 
 namespace MyBackend.Services
 {
     public class AblyService
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
+        private readonly AblyRealtime _realtime;
+        private readonly AblyRest _rest;
 
         public AblyService(string apiKey)
         {
-            _apiKey = apiKey;
-            _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                "Basic", 
-                Convert.ToBase64String(Encoding.ASCII.GetBytes(_apiKey))
-            );
+            var clientOptions = new ClientOptions(apiKey);
+            _realtime = new AblyRealtime(clientOptions);
+            _rest = new AblyRest(clientOptions);
         }
 
         public async Task SendMessageAsync(string channelName, object message)
         {
-            var payload = new[] { new { name = "message", data = message } };
-            var response = await _httpClient.PostAsJsonAsync(
-                $"https://rest.ably.io/channels/{Uri.EscapeDataString(channelName)}/messages",
-                payload
-            );
-            response.EnsureSuccessStatusCode();
+            var channel = _realtime.Channels.Get(channelName);
+            await channel.PublishAsync("message", message);
+        }
+        
+        public async Task<List<ChatMessage>> GetChannelHistoryAsync(string channelName)
+        {
+            var channel = _rest.Channels.Get(channelName);
+            var historyPage = await channel.HistoryAsync(new PaginatedRequestParams { Limit = 100 });
+            
+            var messages = new List<ChatMessage>();
+            
+            // Verificar si hay elementos en historyPage.Items
+            if (historyPage.Items.Count() == 0)
+            {
+                // No hay mensajes en este canal
+                return messages;
+            }
+            
+            foreach (var message in historyPage.Items)
+            {
+                try
+                {
+                    var data = message.Data as Newtonsoft.Json.Linq.JObject;
+                    if (data != null)
+                    {
+                        var (clientId, consultantId) = ChatChannelService.ParseChannelName(channelName);
+                        
+                        var fromUserId = data["from"]?.ToString();
+                        var toUserId = fromUserId == clientId ? consultantId : clientId;
+                        
+                        messages.Add(new ChatMessage
+                        {
+                            Id = Guid.Parse(message.Id), // Convertir string a Guid
+                            ChannelName = channelName,
+                            Text = data["text"]?.ToString(),
+                            FromUserId = fromUserId,
+                            ToUserId = toUserId,
+                            Timestamp = message.Timestamp.HasValue ? message.Timestamp.Value.DateTime.ToUniversalTime() : DateTime.UtcNow,
+                            Source = "Ably"
+                        });
+                    }
+                }
+                catch (Exception)
+                {
+                    // Ignorar mensajes con formato incorrecto
+                    continue;
+                }
+            }
+            
+            return messages;
         }
     }
 }

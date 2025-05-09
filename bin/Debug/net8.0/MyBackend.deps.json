@@ -17,10 +17,26 @@
           "Newtonsoft.Json": "13.0.3",
           "Npgsql": "9.0.3",
           "Swashbuckle.AspNetCore": "6.6.2",
-          "System.IdentityModel.Tokens.Jwt": "8.6.1"
+          "System.IdentityModel.Tokens.Jwt": "8.6.1",
+          "ably.io": "1.2.15"
         },
         "runtime": {
           "MyBackend.dll": {}
+        }
+      },
+      "ably.io/1.2.15": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/net7.0/IO.Ably.DeltaCodec.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/net7.0/IO.Ably.dll": {
+            "assemblyVersion": "1.2.15.0",
+            "fileVersion": "1.2.15.0"
+          }
         }
       },
       "BCrypt.Net-Next/4.0.3": {
@@ -1006,6 +1022,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "ably.io/1.2.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WWko1pYPIUheQ88uuag9EH8hlC58/kABX4JEWYMYjoZ0mWjzpIlCxEkYx2b7DXZ4zyRRIMhTPQeWZjyJ3dZVwA==",
+      "path": "ably.io/1.2.15",
+      "hashPath": "ably.io.1.2.15.nupkg.sha512"
     },
     "BCrypt.Net-Next/4.0.3": {
       "type": "package",

@@ -170,3 +170,5 @@ E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\refint\MyBac
 E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\MyBackend.pdb
 E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\MyBackend.genruntimeconfig.cache
 E:\programacion\Programacion web\backend\MyBackend\obj\Debug\net8.0\ref\MyBackend.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\IO.Ably.DeltaCodec.dll
+E:\programacion\Programacion web\backend\MyBackend\bin\Debug\net8.0\IO.Ably.dll

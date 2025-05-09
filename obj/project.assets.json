@@ -2,6 +2,28 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "ably.io/1.2.15": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "compile": {
+          "lib/net7.0/IO.Ably.DeltaCodec.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net7.0/IO.Ably.dll": {
+            "related": ".DeltaCodec.pdb;.DeltaCodec.xml;.deps.json;.dll.config;.NETStandard20.xml;.pdb"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/IO.Ably.DeltaCodec.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net7.0/IO.Ably.dll": {
+            "related": ".DeltaCodec.pdb;.DeltaCodec.xml;.deps.json;.dll.config;.NETStandard20.xml;.pdb"
+          }
+        }
+      },
       "BCrypt.Net-Next/4.0.3": {
         "type": "package",
         "compile": {
@@ -1434,6 +1456,66 @@
     }
   },
   "libraries": {
+    "ably.io/1.2.15": {
+      "sha512": "WWko1pYPIUheQ88uuag9EH8hlC58/kABX4JEWYMYjoZ0mWjzpIlCxEkYx2b7DXZ4zyRRIMhTPQeWZjyJ3dZVwA==",
+      "type": "package",
+      "path": "ably.io/1.2.15",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ably.io.1.2.15.nupkg.sha512",
+        "ably.io.nuspec",
+        "lib/Xamarin.iOS/IO.Ably.DeltaCodec.dll",
+        "lib/Xamarin.iOS/IO.Ably.DeltaCodec.pdb",
+        "lib/Xamarin.iOS/IO.Ably.DeltaCodec.xml",
+        "lib/Xamarin.iOS/IO.Ably.dll",
+        "lib/Xamarin.iOS/IO.Ably.dll.config",
+        "lib/Xamarin.iOS/IO.Ably.pdb",
+        "lib/monoandroid/IO.Ably.DeltaCodec.dll",
+        "lib/monoandroid/IO.Ably.DeltaCodec.pdb",
+        "lib/monoandroid/IO.Ably.DeltaCodec.xml",
+        "lib/monoandroid/IO.Ably.dll",
+        "lib/monoandroid/IO.Ably.dll.config",
+        "lib/monoandroid/IO.Ably.pdb",
+        "lib/monotouch/IO.Ably.DeltaCodec.dll",
+        "lib/monotouch/IO.Ably.DeltaCodec.pdb",
+        "lib/monotouch/IO.Ably.DeltaCodec.xml",
+        "lib/monotouch/IO.Ably.dll",
+        "lib/monotouch/IO.Ably.dll.config",
+        "lib/monotouch/IO.Ably.pdb",
+        "lib/net46/IO.Ably.DeltaCodec.dll",
+        "lib/net46/IO.Ably.DeltaCodec.pdb",
+        "lib/net46/IO.Ably.DeltaCodec.xml",
+        "lib/net46/IO.Ably.dll",
+        "lib/net46/IO.Ably.dll.config",
+        "lib/net46/IO.Ably.pdb",
+        "lib/net46/IO.Ably.xml",
+        "lib/net6.0/IO.Ably.DeltaCodec.dll",
+        "lib/net6.0/IO.Ably.DeltaCodec.pdb",
+        "lib/net6.0/IO.Ably.DeltaCodec.xml",
+        "lib/net6.0/IO.Ably.NETStandard20.xml",
+        "lib/net6.0/IO.Ably.deps.json",
+        "lib/net6.0/IO.Ably.dll",
+        "lib/net6.0/IO.Ably.dll.config",
+        "lib/net6.0/IO.Ably.pdb",
+        "lib/net7.0/IO.Ably.DeltaCodec.dll",
+        "lib/net7.0/IO.Ably.DeltaCodec.pdb",
+        "lib/net7.0/IO.Ably.DeltaCodec.xml",
+        "lib/net7.0/IO.Ably.NETStandard20.xml",
+        "lib/net7.0/IO.Ably.deps.json",
+        "lib/net7.0/IO.Ably.dll",
+        "lib/net7.0/IO.Ably.dll.config",
+        "lib/net7.0/IO.Ably.pdb",
+        "lib/netstandard2.0/IO.Ably.DeltaCodec.dll",
+        "lib/netstandard2.0/IO.Ably.DeltaCodec.pdb",
+        "lib/netstandard2.0/IO.Ably.DeltaCodec.xml",
+        "lib/netstandard2.0/IO.Ably.NETStandard20.xml",
+        "lib/netstandard2.0/IO.Ably.deps.json",
+        "lib/netstandard2.0/IO.Ably.dll",
+        "lib/netstandard2.0/IO.Ably.dll.config",
+        "lib/netstandard2.0/IO.Ably.pdb"
+      ]
+    },
     "BCrypt.Net-Next/4.0.3": {
       "sha512": "W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
       "type": "package",
@@ -4151,7 +4233,8 @@
       "Newtonsoft.Json >= 13.0.3",
       "Npgsql >= 9.0.3",
       "Swashbuckle.AspNetCore >= 6.6.2",
-      "System.IdentityModel.Tokens.Jwt >= 8.6.1"
+      "System.IdentityModel.Tokens.Jwt >= 8.6.1",
+      "ably.io >= 1.2.15"
     ]
   },
   "packageFolders": {
@@ -4237,6 +4320,10 @@
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",
             "version": "[8.6.1, )"
+          },
+          "ably.io": {
+            "target": "Package",
+            "version": "[1.2.15, )"
           }
         },
         "imports": [
