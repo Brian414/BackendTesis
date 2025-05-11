@@ -170,10 +170,14 @@ public class UserController : ControllerBase{
             return Unauthorized(new { message = "No autorizado para realizar esta acción" });
         }
 
+        // Eliminar todos los mensajes de chat
+        await context.ChatMessages.ExecuteDeleteAsync();
+        
+        // Eliminar todos los usuarios
         await context.Users.ExecuteDeleteAsync();
         await context.SaveChangesAsync();
         
-        return Ok(new { message = "Tabla de usuarios vaciada correctamente" });
+        return Ok(new { message = "Tabla de usuarios y mensajes vaciada correctamente" });
     }
 
     [HttpGet("GetConsultores")]
