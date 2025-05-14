@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBackend.DataBase;
 using MyBackend.Interface;
-using MyBackend.Model;
+using MyBackend.Models;
 using MyBackend.Class;
 
 namespace MyBackend.Controller;

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MyBackend.Model;
+namespace MyBackend.Models;
 public class User{
     [Key]
     public Guid UserId { get ; set ;}
