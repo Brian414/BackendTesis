@@ -4,6 +4,6 @@ namespace MyBackend.Models.Requests
 {
     public class DeleteChannelRequest
     {
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 }

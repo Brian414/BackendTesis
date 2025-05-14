@@ -10,7 +10,7 @@ public class DBContext : DbContext
     {}
 
     public required DbSet<User> Users { get; set; }
-    public DbSet<ChatMessage> ChatMessages { get; set; }
+    public required DbSet<ChatMessage> ChatMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
